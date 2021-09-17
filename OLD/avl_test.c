@@ -13,7 +13,9 @@ int main(){
 
     print_tree(r, 0);
 
-  //  printf("Freed: %d\n", free_mem(&r));
+
+
+    printf("Freed: %d\n", free_mem(&r));
 
     return 0;
 }

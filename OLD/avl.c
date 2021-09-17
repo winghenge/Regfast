@@ -8,15 +8,15 @@ void update_bf(struct AVL_Node *node){
         // if there is a left node, grab the longest hight it has:
         // left or right
         node->left_h = (node->left->left_h > node->left->right_h) ? 
-        node->left->left_h+1 : node->left->right_h+1;
+        node->left_h+1 : node->right_h+1;
     else node->left_h = 0;
 
     if (node->right)
         // if there is a right node, grab the longest hight it has:
         // left or right
         node->right_h = (node->right->left_h > node->right->right_h) ?
-        node->right->left_h+1 : node->right->right_h+1;
-    else node->right = 0;
+        node->left_h+1 : node->right_h+1;
+    else node->right_h = 0;
 
     // re-caulculate the bf
     node->b_factor = node->left_h - node->right_h;
@@ -95,12 +95,16 @@ void balance(struct AVL_Node *pivot, struct AVL_Node **parent){
 
     // Determine if the pivot node needs to be rotated
     // if balance factor is 1, 0, -1 we dont need to do anything
-    if (pivot->b_factor <= 1 && pivot->b_factor > -1) return;
+    if (pivot->b_factor <= 1 && pivot->b_factor > -1){
+	    printf("BF not imbalanced: %d\n", pivot->val);
+	    return;
+	}
 
     // at this point, we need to wither perform a right or left rotate on our
     // pivot, but will also need to check the roating child to see if an 
     // aditional rotation is needed as well
     if (pivot->b_factor > 0){
+	    printf("Right Rotate\n");
         // Imbalanced on left side -> Right rotate
         // the child node to rotate
         struct AVL_Node *child = pivot->left;
@@ -150,6 +154,7 @@ void balance(struct AVL_Node *pivot, struct AVL_Node **parent){
 
     }
     else{
+	    printf("Left rotate\n");
         // Imbalanced on right side -> left rotate
         // the child node to rotate
         struct AVL_Node *child = pivot->right;
@@ -288,6 +293,15 @@ int insert_node(struct AVL_Node **root, int val){
             }
         }
     }
+
+	while(1){
+		// update the balance factor
+		update_bf(prev[cnt]);
+
+		cnt--;
+
+		if (cnt < 0) break;
+	}	
 
     return 1;
 }
