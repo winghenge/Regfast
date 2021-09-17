@@ -112,7 +112,8 @@ unsigned int hash(char *key){
 
         // add one to the next char multiply so that null characters dont multiply by zero.
         // either way would work, but it prevents all single char keys from being zero
-        hash += *key * (*(++key)+1);
+        hash += *key * (*(key+1)+1);
+        key++;
     }
 
     return hash;
@@ -121,12 +122,24 @@ unsigned int hash(char *key){
 // In a few of these functions, we need to first check to see if the the key alread exists in the
 // index
 // if the key exists, return the address of that datum, otherwise NULL
-struct Hash_Datum *key_exists(struct Hash_Datum *root, char *key){
+struct Hash_Datum *key_exists(struct Hash_Datum *root, char *key, struct Hash_Datum **prev){
+
+    // the poiter `prev` is populated with the address of the datum that points to the found key:value pair. 
+    // if the address of prev is NULL, this is not done.
+    // This is used to be able to remove/insert/traverse the datum chain
+    // using this function, instead of having a function that performs this
+    // as well.
+    
+    // if we are returning the prev address, set to NULL as default.
+    // if NULL is returned, the Hash_Buccket was the previous
+    if (prev) *prev = NULL;
     
     while(1){
 
         if (!root) return NULL;
         if (!strcmp(root->key, key)) return root;
+
+        if (prev) *prev = root;
 
         root = root->next;
     }
@@ -148,7 +161,7 @@ int insert_ht(struct Hash_Table *table, char *key, int value){
 
     // check to see if the key already exists in the table
     // if it does, return an exit code
-    if (key_exists(table->table[index].next, key)) return -E_KEY_COLL;
+    if (key_exists(table->table[index].next, key, NULL)) return -E_KEY_COLL;
 
     // Alright, grab the next datum struct from the reserve and populate it
     struct Hash_Datum *datum = table->reserve;
@@ -171,11 +184,40 @@ int insert_ht(struct Hash_Table *table, char *key, int value){
 }
 
 void remove_ht(struct Hash_Table *table, char *key){
+    // Call key exists to:
+    // A) see if the key:datum pair exists
+    // B) get the address of the key:datum pair
+    // C) get the address of the previous pair
+
+    // get the index of the key
+    unsigned int index = hash(key) % table->width;
+
+    // perform the lookup
+    struct Hash_Datum *prev;
+    struct Hash_Datum *p_datum = key_exists(table->table[index].next, key, &prev);
+
+
+    // if the key isnt in the table, we can return now
+    if (!p_datum) return;
+
+    // Alright, we need to delete the datum
+    // first, we need to remove it from the chain
+    // if prev == NULL, the bucket is the previous
+    if (prev) prev->next = p_datum->next;
+    else table->table[index].next = p_datum->next;
+
+    // now we can insert this datum back into the reserve chain
+    p_datum->next = table->reserve;
+    table->reserve = p_datum;
+
+
     return;
 }
 
 struct Hash_Datum *lookup_ht(struct Hash_Table *table, char *key){
     
     // try to lookup the datum thats linked to that key
-    return 0;
+    // get the index of the key
+    unsigned int index = hash(key) % table->width;
+    return key_exists(table->table[index].next, key, NULL);
 }
