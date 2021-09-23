@@ -4,7 +4,7 @@
 #include "hash.h"
 
 // Memory managment presets
-#define DATUM_CHUNK     512 // how many datum structs to malloc at once
+#define DATUM_CHUNK     1 // how many datum structs to malloc at once
 
 // Hash table presets
 #define WIDTH_DEFAULT   64  // Width
@@ -195,6 +195,9 @@ int insert_ht(struct Hash_Table *table, char *key, int value){
     if (key_exists(table->table[index].next, key, NULL)) return -E_KEY_COLL;
 
     // Alright, grab the next datum struct from the reserve and populate it
+    // First, if the reserve is empty, refill it
+    if (!table->reserve) alloc_chunk(table);
+
     struct Hash_Datum *datum = table->reserve;
     table->reserve = datum->next;
 
