@@ -29,9 +29,9 @@ struct Hash_Datum{
     struct Hash_Datum *next;
 
     // Alright, so a hash table is fairly worthless without the value to pair with the key. 
-    // for testing purposes, this will just be an Int, however migth be hardcoded evnetually to a
-    // specific struct, or a void*
-    int val;
+    // will use a void * to allow more flexable use of this library. user is
+    // responsible for memory management of the value.
+    void *val;
 
 };
 
@@ -89,11 +89,11 @@ struct Hash_Table{
 // Our table create, insert, remove, and delete functions
 struct Hash_Table *init_ht();
 void delete_ht(struct Hash_Table **table);
-int insert_ht(struct Hash_Table *table, char *key, int value);
+int insert_ht(struct Hash_Table *table, char *key, void *value);
 void remove_ht(struct Hash_Table *table, char *key);
 
 // the lookup function to return the stored value
-struct Hash_Datum *lookup_ht(struct Hash_Table *table, char *key);
+void *lookup_ht(struct Hash_Table *table, char *key);
 
 unsigned int hash(char *key);
 

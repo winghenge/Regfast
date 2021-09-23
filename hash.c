@@ -177,7 +177,7 @@ struct Hash_Datum *key_exists(struct Hash_Datum *root, char *key, struct Hash_Da
 
 }
 
-int insert_ht(struct Hash_Table *table, char *key, int value){
+int insert_ht(struct Hash_Table *table, char *key, void *value){
 
     // What we need to do:
     // 0) Check to see if the key is already in the table
@@ -248,10 +248,13 @@ void remove_ht(struct Hash_Table *table, char *key){
     return;
 }
 
-struct Hash_Datum *lookup_ht(struct Hash_Table *table, char *key){
+// return the pointer to the value for the key:value pair
+void *lookup_ht(struct Hash_Table *table, char *key){
     
     // try to lookup the datum thats linked to that key
-    // get the index of the key
-    unsigned int index = hash(key) % table->width;
-    return key_exists(table->table[index].next, key, NULL);
+    struct Hash_Datum *tmp = key_exists(table->table[hash(key) % table->width].next, key, NULL);
+
+    // if tmp != NULL (the value exists) return the pointer, otherwise 
+    // return NULL
+    return (tmp) ? tmp->val : NULL;
 }

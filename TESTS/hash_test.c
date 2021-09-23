@@ -3,8 +3,6 @@
 #include "../hash.h"
 
 int main(){
-    struct Hash_Datum *tmp_datum;
-
     // test the hash function
     printf("====================\n");
     printf("==Hash Function=====\n");
@@ -25,26 +23,29 @@ int main(){
     printf("====================\n");
     printf("==Insert============\n");
     printf("====================\n");
-    printf("Inserting bob: %d\n", insert_ht(table, "bob", 42));
-    printf("Inserting alice: %d\n", insert_ht(table, "alice", 420));
-    printf("Inserting max: %d\n", insert_ht(table, "max", 69));
-    printf("Inserting bob: %d\n", insert_ht(table, "bob", 8008));
+    int bob = 42;
+    printf("Inserting bob: %d\n", insert_ht(table, "bob", (void *)(&bob)));
+    int alice = 420;
+    printf("Inserting alice: %d\n", insert_ht(table, "alice", (void *)(&alice)));
+    int max = 69;
+    printf("Inserting max: %d\n", insert_ht(table, "max", (void *)(&max)));
+    printf("Inserting bob: %d\n", insert_ht(table, "bob", (void *)(&bob)));
 
     // try to lookup bob and alice
     printf("====================\n");
     printf("==Lookup============\n");
     printf("====================\n");
-    tmp_datum = lookup_ht(table, "bob");
-    if (tmp_datum) printf("bob found! value %d\n", tmp_datum->val);
-    else printf("bob not found\n");
+    void *val = lookup_ht(table, "bob");
+    if (val) printf("[Pass] bob found! value %d\n", *((int *)val));
+    else printf("[FAIL] bob not found\n");
 
-    tmp_datum = lookup_ht(table, "alice");
-    if (tmp_datum) printf("alice found! value %d\n", tmp_datum->val);
-    else printf("alice not found\n");
+    val = lookup_ht(table, "alice");
+    if (val) printf("[PASS] alice found! value %d\n", *((int *)val));
+    else printf("[FAIL] alice not found\n");
 
-    tmp_datum = lookup_ht(table, "boo");
-    if (tmp_datum) printf("boo found! value %d\n", tmp_datum->val);
-    else printf("boo not found\n");
+    val = lookup_ht(table, "boo");
+    if (val) printf("[FAIL] boo found! value %d\n", *((int *)val));
+    else printf("[PASS] boo not found\n");
 
 
     // Try to remove bob
@@ -52,17 +53,17 @@ int main(){
     printf("==Remove bob========\n");
     printf("====================\n");
     remove_ht(table, "bob");
-    tmp_datum = lookup_ht(table, "bob");
-    if (tmp_datum) printf("bob found! value %d\n", tmp_datum->val);
-    else printf("bob not found\n");
+    val = lookup_ht(table, "bob");
+    if (val) printf("[FAIL] bob found! value %d\n", *((int *)val));
+    else printf("[PASS] bob not found\n");
 
     // Try to delete the table
     printf("====================\n");
-    printf("==Remove bob========\n");
+    printf("==Free Table Mem====\n");
     printf("====================\n");
     delete_ht(&table);
-    if (table) printf("Table not freed!\n");
-    else printf("Table freed!\n");
+    if (table) printf("[FAIL] Table not freed!\n");
+    else printf("[PASS] Table freed!\n");
 
 
 
