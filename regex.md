@@ -32,7 +32,7 @@ regex token -- a literal space cannot be inserted into a regex, it must be escap
 \+ -> +
 \^ -> ^
 \* -> *
-\! -> !
+\? -> !
 \\ -> \
 ( ... ) -> group
 \( \) -> ( )

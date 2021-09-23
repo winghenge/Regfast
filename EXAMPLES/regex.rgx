@@ -1,0 +1,20 @@
+This is the preabmle!
+Its essentialy a multi-lined comment that is allowed to explain the regex definition file: what it does, what its for, who amde it, etc.
+
+the preable is terminated, and the definition section begins with the bellow line/character sequence
+
+!!
+
+? in the definitions section, a question mark denotes a single lined comment, unless escaped (\?)
+
+? below is a regex to match the word 'Apple', and pair it with the token 'Fruit'
+Apple Fruit
+
+? Match either 'fiber' or 'fibre' with the token 'Nutrient'
+fib(er|re) Nutrient
+
+? Multiple regex's can be matched to the same token
+banana Fruit
+
+? However, each regex needs to be unique, thus the below regex:token will result in a error if allowed to compile
+Apple Computer
