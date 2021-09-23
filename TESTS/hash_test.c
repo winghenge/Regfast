@@ -56,6 +56,15 @@ int main(){
     if (tmp_datum) printf("bob found! value %d\n", tmp_datum->val);
     else printf("bob not found\n");
 
+    // Try to delete the table
+    printf("====================\n");
+    printf("==Remove bob========\n");
+    printf("====================\n");
+    delete_ht(&table);
+    if (table) printf("Table not freed!\n");
+    else printf("Table freed!\n");
+
+
 
     return 0;
 }

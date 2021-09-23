@@ -76,6 +76,37 @@ struct Hash_Table *init_ht(){
 
 // delete the hash table and all of its assosiative memory
 void delete_ht(struct Hash_Table **table){
+
+    // with our table implementation, the char *key doesnt need to be freed, since its being handled
+    // by an optimizer (large character buffer). the value isnt a pointer so it doesnt need to be
+    // freed as well. All of the datums are freed from the memory objects, and the buckets need to
+    // be freed as well
+
+    // start by freeing the buckets
+    free((*table)->table);
+
+    // now free each datum memory structure
+    struct Hash_Mem *tmp;
+    while(1){
+        // remember the next mem structure
+        tmp = (*table)->datum_mem->next;
+
+        // free the datum chunk
+        free((*table)->datum_mem->head);
+
+        // free the memory structure itself
+        free((*table)->datum_mem);
+
+        // reset the head memory structure for the next itteration
+        (*table)->datum_mem = tmp;
+        
+        // if we are done with the memory structures, break out of this loop
+        if (!tmp) break;
+    }
+
+    // now we can free the table itself!
+    free(*table);
+    *table = NULL;
     
 
     return;
