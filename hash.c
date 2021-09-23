@@ -4,7 +4,7 @@
 #include "hash.h"
 
 // Memory managment presets
-#define DATUM_CHUNK     1 // how many datum structs to malloc at once
+#define DATUM_CHUNK     128 // how many datum structs to malloc at once
 
 // Hash table presets
 #define WIDTH_DEFAULT   64  // Width
