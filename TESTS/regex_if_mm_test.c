@@ -43,6 +43,18 @@ int main(){
     if (foo->token == -1) printf("[PASS] Re-Alloced struct has blanked token\n");
     else printf("[FAIL] Re-Alloced struct has non-default token value\n");
 
+    // CHUNKSIZE is defined by regex_mm.h
+    // when one chunk of memory is used, a new chunk should be allocated
+    // so lets try to grab CHUNK_SIZE+1 nodes. 
+    //
+    // we've alreay alloced Foo, so we just need 1 chunksize more
+    for (int i = 0; i < CHUNK_SIZE; i++)
+        foo = new_node();
+
+    // check to see if we segfaulted/have a null node
+    if (foo) printf("[PASS] Regex MM allocated oveer 1 chunk of nodes\n");
+    else printf("[FAIL] Regex MM failed to allocate over 1 chunk of nodes\n");
+
     // free the memory, no way to test in file. can test with valgrind
     free_mem();
 
