@@ -2,49 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h"
-
-// Memory managment presets
-#define DATUM_CHUNK     128 // how many datum structs to malloc at once
+#include "mem_man.h"
 
 // Hash table presets
 #define WIDTH_DEFAULT   64  // Width
 
 // Optimisation presets
 #define LOAD_BALANCE    70  // defined as a % ratio of depth/width. 
-
-// First, we will deal with memory management optimizations. 
-// We're going to perform a similar task as was done with the regex_mm library: grab a large initial
-// chunk of memory from the kernel, then use it as needed. We can run under the assumption that very
-// few hash tables will be made, and that growing the table will be a rare occurance, so we will
-// focus our attentions to optimizing the memory allotment of the Hash_Datum structs
-
-// takes a pointer to a hash_table struct and adds a new chunk of datums to the reserve
-void alloc_chunk(struct Hash_Table *table){
-    // assert that the table isnt NULL
-    if (!table) return;
-
-    // Ask the kernel for some memory space for a new Hash_Mem struct, then insert it into the
-    // table's linked list 
-    struct Hash_Mem *tmp_mem = (struct Hash_Mem *)malloc(sizeof(struct Hash_Mem));
-    tmp_mem->next = table->datum_mem;
-    table->datum_mem = tmp_mem;
-
-    // Grab a chunk of memory for datums and store it in the new memory structure
-    tmp_mem->head = (struct Hash_Datum *)malloc(sizeof(struct Hash_Datum) * DATUM_CHUNK);
-
-    // Chain together the chunk of new datums into a linked list
-    for (int i = 0; i < (DATUM_CHUNK-1); i++)
-        tmp_mem->head[i].next = &(tmp_mem->head[i+1]);
-
-    // NULL terminate the list
-    tmp_mem->head[DATUM_CHUNK-1].next = NULL;
-
-    // Add the new chunk to the reserves
-    tmp_mem->head[DATUM_CHUNK-1].next = table->reserve;
-    table->reserve = tmp_mem->head;
-
-    return;
-}
 
 // Creates an empty hash table
 struct Hash_Table *init_ht(){
@@ -57,9 +21,6 @@ struct Hash_Table *init_ht(){
     // ensure that the reserve and data_mem pointers are NULL
     table->reserve = NULL;
     table->datum_mem = NULL;
-
-    // allocate a chunk of datums
-    alloc_chunk(table);
 
     // create a tabble from the bbuckers (array of buckets)
     table->table = (struct Hash_Bucket *)malloc(sizeof(struct Hash_Bucket) * WIDTH_DEFAULT);
@@ -78,15 +39,12 @@ struct Hash_Table *init_ht(){
 void delete_ht(struct Hash_Table **table){
 
     // with our table implementation, the char *key doesnt need to be freed, since its being handled
-    // by an optimizer (large character buffer). the value isnt a pointer so it doesnt need to be
-    // freed as well. All of the datums are freed from the memory objects, and the buckets need to
+    // by an optimizer (large character buffer). the value is assumed to be handled by the
+    // user and thus not freed
+    // All of the datums are freed back to mem_manager, and the buckets need to
     // be freed as well
 
-    // start by freeing the buckets
-    free((*table)->table);
-
-    // now free each datum memory structure
-    struct Hash_Mem *tmp;
+    // itterate through each bucket and free all of the buckets back to mem_man
     while(1){
         // remember the next mem structure
         tmp = (*table)->datum_mem->next;

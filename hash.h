@@ -50,19 +50,6 @@ struct Hash_Bucket{
 
 };
 
-// The Hash_Mem struct will comprise a linked list to keep track of the addresses returned by malloc
-// when allocating a chunk of datum structs. These memory lists will be table-specific, and all of
-// the memory freed when the table is deleted.
-struct Hash_Mem{
-
-    // The pointer origonally returned by malloc. Freeing this address will free the entire chunk
-    struct Hash_Datum *head;
-
-    // the pointer to the next entry in the memory chain
-    struct Hash_Mem *next;
-
-};
-
 // A pretty wrapper for our hash table. contains the basic information about the table: how many
 // buckets, how much data. this information may be used later to load-balance the table to optimize
 // access times when the table files
@@ -73,16 +60,6 @@ struct Hash_Table{
 
     // the pointer to the start of the table
     struct Hash_Bucket *table;
-
-    // =====================================
-    // Advanced Memory Managment information
-    // =====================================
-    // the chunk of Datum structs we grab at once to prevent frequent calls to malloc
-    struct Hash_Datum *reserve;
-    
-    // The list of memory structures allocated for this table, each records the address in memory of
-    // each chunk of datum structs. 
-    struct Hash_Mem *datum_mem;
 
 };
 
