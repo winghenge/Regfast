@@ -165,11 +165,11 @@ void delete_IFR(){
         // check to see if its non-NULL, if its null we are done
         if (!cur) break;
 
-        // free the if_regex chunk
-        free(cur->head);
-
         // remember the next alloc struct
         ifr_root.a_h = cur->next;
+
+        // free the IF-regex chunk
+        free(cur->head);
 
         // free the mem root
         free(cur);
@@ -188,11 +188,11 @@ void delete_HTD(){
         // check to see if its non-NULL, if its null we are done
         if (!cur) break;
 
-        // free the if_regex chunk
-        free(cur->head);
-
         // remember the next alloc struct
         htd_root.a_h = cur->next;
+
+        // free the HTD chunk
+        free(cur->head);
 
         // free the mem root
         free(cur);

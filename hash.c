@@ -18,10 +18,6 @@ struct Hash_Table *init_ht(){
     // set the default width
     table->width = WIDTH_DEFAULT;
 
-    // ensure that the reserve and data_mem pointers are NULL
-    table->reserve = NULL;
-    table->datum_mem = NULL;
-
     // create a tabble from the bbuckers (array of buckets)
     table->table = (struct Hash_Bucket *)malloc(sizeof(struct Hash_Bucket) * WIDTH_DEFAULT);
 
@@ -45,22 +41,23 @@ void delete_ht(struct Hash_Table **table){
     // be freed as well
 
     // itterate through each bucket and free all of the buckets back to mem_man
-    while(1){
-        // remember the next mem structure
-        tmp = (*table)->datum_mem->next;
+    for (int i = 0; i < (*table)->width; i++){
+        // free each datum in the bucket
+        while(1){
+            // remember the next mem structure
+            struct Hash_Datum *tmp = (*table)->table[i].next;
 
-        // free the datum chunk
-        free((*table)->datum_mem->head);
+            // if there is no tmp datum, we're done with this bucket
+            if (!tmp) break;
 
-        // free the memory structure itself
-        free((*table)->datum_mem);
+            // have the bucket remember the next datum so we dont loose the new head of the LL
+            (*table)->table[i].next = tmp->next;
 
-        // reset the head memory structure for the next itteration
-        (*table)->datum_mem = tmp;
-        
-        // if we are done with the memory structures, break out of this loop
-        if (!tmp) break;
+        }
     }
+
+    // now we can free all of the buckets
+    free((*table)->table);
 
     // now we can free the table itself!
     free(*table);
@@ -153,11 +150,7 @@ int insert_ht(struct Hash_Table *table, char *key, void *value){
     if (key_exists(table->table[index].next, key, NULL)) return -E_KEY_COLL;
 
     // Alright, grab the next datum struct from the reserve and populate it
-    // First, if the reserve is empty, refill it
-    if (!table->reserve) alloc_chunk(table);
-
-    struct Hash_Datum *datum = table->reserve;
-    table->reserve = datum->next;
+    struct Hash_Datum *datum = new_HTD();
 
     // populate
     datum->hash = hash(key);
@@ -199,8 +192,7 @@ void remove_ht(struct Hash_Table *table, char *key){
     else table->table[index].next = p_datum->next;
 
     // now we can insert this datum back into the reserve chain
-    p_datum->next = table->reserve;
-    table->reserve = p_datum;
+    free_HTD(&p_datum);
 
 
     return;

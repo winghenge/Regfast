@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../hash.h"
+#include "../mem_man.h"
 
 int main(){
     // test the hash function
@@ -64,6 +65,9 @@ int main(){
     delete_ht(&table);
     if (table) printf("[FAIL] Table not freed!\n");
     else printf("[PASS] Table freed!\n");
+
+    // free memory assosiated with mem_man
+    delete_all();
 
 
 
