@@ -48,10 +48,13 @@ void alloc_chunk_IFR(){
     // allocate a new chunk of IF_Regex nodes
     mem->head = (void *)malloc(sizeof(struct IF_Regex) * CHUNK_SIZE);
 
+    // temp pointer for building the LL
+    struct IF_Regex *tmp = mem->head;
+
     // update the next struct in the memory node
     for (int i = 0; i < CHUNK_SIZE - 1; i++){
-        ((struct IF_Regex *)mem->head)->down = (struct IF_Regex *)(mem->head + IFR_SIZE);
-        mem->head += IFR_SIZE;
+        tmp->down = (tmp + IFR_SIZE);
+        tmp += IFR_SIZE;
     }
 
     ifr_root.next = (void *)mem->head;
@@ -69,10 +72,13 @@ void alloc_chunk_HTD(){
     // allocate a new chunk of Hash Datum nodes
     mem->head = (void *)malloc(sizeof(struct Hash_Datum) * CHUNK_SIZE);
 
+    // temp pointer for building the LL
+    struct Hash_Datum *tmp = mem->head;
+
     // update the next struct in the memory node
     for (int i = 0; i < CHUNK_SIZE - 1; i++){
-        ((struct Hash_Datum *)mem->head)->next = (struct Hash_Datum *)(mem->head + HTD_SIZE);
-        mem->head += HTD_SIZE;
+        tmp->next = (tmp + HTD_SIZE);
+        tmp += HTD_SIZE;
     }
 
     htd_root.next = (void *)mem->head;
@@ -158,7 +164,7 @@ void free_HTD(struct Hash_Datum **node){
 void delete_IFR(){
 
     while(1){
-        
+
         // isolate the alloc head to free
         struct Alloc_Head *cur = ifr_root.a_h;
 
@@ -175,6 +181,11 @@ void delete_IFR(){
         free(cur);
 
     }
+
+    // set the LL pointed by ifr_root to NULL to prevent handing out non-alloc'd address
+    ifr_root.next = NULL;
+    ifr_root.a_h = NULL;
+
 }
 
 // free all of the HTD memory
@@ -198,6 +209,10 @@ void delete_HTD(){
         free(cur);
 
     }
+
+    // make sure the root struct is ready to be re-used
+    htd_root.next = NULL;
+    htd_root.a_h = NULL;
 }
 
 // free all of the allocated memory
