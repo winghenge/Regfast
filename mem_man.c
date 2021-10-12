@@ -9,6 +9,7 @@
 // memmory offset calcualtions
 #define IFR_SIZE    (sizeof(struct IF_Regex))
 #define HTD_SIZE    (sizeof(struct Hash_Datum))
+#define PTR_SIZE    (sizeof(void *))
 
 // Everytime we grab a chunk of memory for some RegFast struct
 // we need to keep track of the returned address from malloc
@@ -38,27 +39,40 @@ struct Memory_Node htd_root = {NULL, NULL};
 // grab a chunk of memory from the head and assemble the free list from it
 // we need one per struct supported
 void alloc_chunk_IFR(){
+    
+    printf("ACIFR 1\n");
 
     // declare a new Alloc_Head struct to store the info from this new alloc
     struct Alloc_Head *mem = (struct Alloc_Head *)malloc(sizeof(struct Alloc_Head));
     // make it the new root of the mem_root list of the passed memory node
+    printf("ACIFR 2\n");
     mem->next = ifr_root.a_h;
+    printf("ACIFR 3\n");
     ifr_root.a_h = mem;
 
     // allocate a new chunk of IF_Regex nodes
     mem->head = (void *)malloc(sizeof(struct IF_Regex) * CHUNK_SIZE);
+    printf(">>%p\n", mem->head);
+    printf("ACIFR 4\n");
 
     // temp pointer for building the LL
     struct IF_Regex *tmp = mem->head;
+    printf("ACIFR 5\n");
 
     // update the next struct in the memory node
-    for (int i = 0; i < CHUNK_SIZE - 1; i++){
-        tmp->down = (tmp + IFR_SIZE);
-        tmp += IFR_SIZE;
+/*    for (int i = 0; i < CHUNK_SIZE - 1; i++){
+        tmp->down = (tmp + PTR_SIZE);
+        tmp += PTR_SIZE;
     }
+    */
+    printf("ACIFR 6\n");
 
     ifr_root.next = (void *)mem->head;
 
+    printf("ACIFR 7\n");
+
+    free(mem->head);
+    printf("ACIFR DEL\n");
 }
 
 void alloc_chunk_HTD(){
@@ -77,8 +91,8 @@ void alloc_chunk_HTD(){
 
     // update the next struct in the memory node
     for (int i = 0; i < CHUNK_SIZE - 1; i++){
-        tmp->next = (tmp + HTD_SIZE);
-        tmp += HTD_SIZE;
+        tmp->next = (tmp + PTR_SIZE);
+        tmp += PTR_SIZE;
     }
 
     htd_root.next = (void *)mem->head;
@@ -88,18 +102,24 @@ void alloc_chunk_HTD(){
 // return the address of a free IF_Regex struct to the stack
 struct IF_Regex *new_IFR(){
 
+    printf("NIFR 1\n");
+
     // if the free_list is empty, alloc a new chunk
     if (!ifr_root.next) alloc_chunk_IFR();
 
+    printf("NIFR 2\n");
     // Grab the next free node
     struct IF_Regex *ret = (struct IF_Regex *)ifr_root.next;
 
+    printf("NIFR 3\n");
     // update the LL
     ifr_root.next = (void *)ret->down;
 
+    printf("NIFR 4\n");
     // clear the node
     ret->down = NULL;
 
+    printf("NIFR 5\n");
     // return the new node
     return ret;
 }
@@ -164,21 +184,28 @@ void free_HTD(struct Hash_Datum **node){
 void delete_IFR(){
 
     while(1){
-
+        printf("DIFR 1\n");
         // isolate the alloc head to free
         struct Alloc_Head *cur = ifr_root.a_h;
+        printf("DIFR 2\n");
 
         // check to see if its non-NULL, if its null we are done
         if (!cur) break;
+        printf("DIFR 3\n");
 
         // remember the next alloc struct
         ifr_root.a_h = cur->next;
+        printf("DIFR 4\n");
+
+        printf("<<%p\n", cur->head);
 
         // free the IF-regex chunk
         free(cur->head);
+        printf("DIFR 5\n");
 
         // free the mem root
         free(cur);
+        printf("DIFR 6\n");
 
     }
 
