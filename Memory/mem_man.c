@@ -1,5 +1,5 @@
-#include "regex_if.h"
-#include "hash.h"
+#include "../Core/regex_if.h"
+#include "../Core/hash.h"
 #include "mem_man.h"
 #include <stdio.h>
 #include <stdlib.h>

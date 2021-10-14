@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h"
-#include "mem_man.h"
+#include "../Memory/mem_man.h"
 
 // Hash table presets
 #define WIDTH_DEFAULT   64  // Width
@@ -150,7 +150,7 @@ int insert_ht(struct Hash_Table *table, char *key, void *value){
     if (key_exists(table->table[index].next, key, NULL)) return -E_KEY_COLL;
 
     // Alright, grab the next datum struct from the reserve and populate it
-    struct Hash_Datum *datum = new_HTD();
+    struct Hash_Datum *datum = new_htd();
 
     // populate
     datum->hash = hash(key);
@@ -192,7 +192,7 @@ void remove_ht(struct Hash_Table *table, char *key){
     else table->table[index].next = p_datum->next;
 
     // now we can insert this datum back into the reserve chain
-    free_HTD(&p_datum);
+    free_htd(&p_datum);
 
 
     return;

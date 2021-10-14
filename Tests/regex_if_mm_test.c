@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "../regex_mm.h"
-#include "../regex_if.h"
+#include "../Memory/mem_man.h"
+#include "../Core/regex_if.h"
 
 
 
