@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Core/hash.h"
-#include "../Memory/mem_man.h"
+#include "../Memory/struct_mem.h"
 
 int main(){
     // test the hash function

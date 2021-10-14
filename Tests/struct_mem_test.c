@@ -1,4 +1,4 @@
-#include "../Memory/mem_man.h"
+#include "../Memory/struct_mem.h"
 #include "../Core/hash.h"
 #include "../Core/regex_if.h"
 #include <stdio.h>

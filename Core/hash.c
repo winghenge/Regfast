@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h"
-#include "../Memory/mem_man.h"
+#include "../Memory/struct_mem.h"
 
 // Hash table presets
 #define WIDTH_DEFAULT   64  // Width

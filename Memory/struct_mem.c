@@ -1,6 +1,6 @@
 #include "../Core/regex_if.h"
 #include "../Core/hash.h"
-#include "mem_man.h"
+#include "struct_mem.h"
 #include <stdio.h>
 #include <stdlib.h>
 
