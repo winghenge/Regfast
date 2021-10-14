@@ -21,20 +21,20 @@ void delete_all();
 // Intermediate Formate Regex (IFR) functions
 //
 // get a new IFR node from the stack
-struct IF_Regex *new_IFR();
+struct IF_Regex *new_ifr();
 // return an IFR node to the stack
-void free_IFR(struct IF_Regex **node);
+void free_ifr(struct IF_Regex **node);
 //delete all the IFR malloc'd memory back to the kernel
-void delete_IFR();
+void delete_ifr();
 
 //
 // Hash Tabel Datum (HTD) functions
 //
 // get a new HTD from the stack
-struct Hash_Datum *new_HTD();
+struct Hash_Datum *new_htd();
 // return a HTD to the stack
-void free_HTD(struct Hash_Datum **node);
+void free_htd(struct Hash_Datum **node);
 // delete all of the HTD malloc'd memory and return it to the kernel
-void delete_HTD();
+void delete_htd();
 
 #endif //REGFAST_MM_H
